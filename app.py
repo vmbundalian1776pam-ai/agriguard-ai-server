@@ -534,9 +534,14 @@ def predict():
 # ─────────────────────────────────────────────────────────────────────────────
 # Startup
 # ─────────────────────────────────────────────────────────────────────────────
-if __name__ == '__main__':
+# Initialize DB and model on module load for Gunicorn
+try:
     init_db()
     load_ai_assets()
+except Exception as e:
+    print('Startup error:', e)
+
+if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     print(f"🚀 Agri-Guard server on http://0.0.0.0:{port}")
     app.run(host='0.0.0.0', port=port, debug=False)
