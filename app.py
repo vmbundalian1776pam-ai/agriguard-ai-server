@@ -229,7 +229,7 @@ def run_ai_prediction(filepath):
 
     hsv = np.array(img_resized.convert('HSV'))
     H, S, V = hsv[:,:,0], hsv[:,:,1], hsv[:,:,2]
-    if np.mean((H >= 10) & (H <= 120) & (S >= 25) & (V >= 25)) < 0.05:
+    if np.mean((H >= 10) & (H <= 120) & (S >= 20) & (V >= 20)) < 0.01:
         return {"status": "unknown", "disease": "Not a Plant / Unrecognized",
                 "recommendation": "The camera did not detect enough plant colours. Ensure a crop leaf is clearly in frame.",
                 "confidence": 0.0}
