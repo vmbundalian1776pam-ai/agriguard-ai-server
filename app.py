@@ -465,38 +465,22 @@ def upload_image():
     field_status   = result.get('status', 'unknown')
     confidence_pct = round(confidence * 100, 2) if 0 < confidence <= 1.0 else round(confidence, 2)
 
-    # Upload to Supabase Storage
-    public_url = filepath
-    if DATABASE_URL:
-        try:
-            timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-            safe_name = secure_filename(f"{timestamp}_{file.filename}")
-            
-            with open(filepath, 'rb') as f_in:
-                file_bytes = f_in.read()
-            
-            res = requests.post(
-                f"{SUPABASE_URL}/storage/v1/object/scans/{safe_name}",
-                headers={
-                    "Authorization": f"Bearer {SUPABASE_KEY}",
-                    "apikey": SUPABASE_KEY,
-                    "Content-Type": file.content_type or "image/jpeg"
-                },
-                data=file_bytes
-            )
-            print(f"Supabase upload response: {res.status_code} {res.text[:200]}")
-            if res.status_code in (200, 201):
-                public_url = f"{SUPABASE_URL}/storage/v1/object/public/scans/{safe_name}"
-                print(f"Image saved to Supabase: {public_url}")
-            else:
-                print(f"Supabase upload failed with status {res.status_code}")
-        except Exception as e:
-            print("Supabase upload failed:", e)
+    # Convert image to Base64 data URL — stored directly in DB, no external storage needed
+    import base64
+    image_data_url = filepath  # fallback
+    try:
+        with open(filepath, 'rb') as f_in:
+            img_bytes = f_in.read()
+        b64 = base64.b64encode(img_bytes).decode('utf-8')
+        image_data_url = f"data:image/jpeg;base64,{b64}"
+        print(f"Image encoded as base64 ({len(b64)} chars)")
+    except Exception as e:
+        print("Base64 encoding failed:", e)
 
     query("INSERT INTO scans (field_id, image_path, result_disease, confidence, recommendation) VALUES (?, ?, ?, ?, ?)",
-          (field_id, public_url, disease, confidence_pct, recommendation), commit=True)
+          (field_id, image_data_url, disease, confidence_pct, recommendation), commit=True)
           
-    # Clean up local file so Render disk doesn't fill up
+    # Clean up local file
     try:
         os.remove(filepath)
     except:
@@ -507,7 +491,7 @@ def upload_image():
     return jsonify({"status": "success", "message": "Rover image scanned successfully",
                     "data": {"disease": disease, "confidence": confidence_pct,
                              "recommendation": recommendation,
-                             "field_status": field_status, "image_url": public_url}})
+                             "field_status": field_status, "image_url": image_data_url}})
 
 @app.route('/predict', methods=['POST'])
 def predict():
