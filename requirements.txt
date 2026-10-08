@@ -5,3 +5,4 @@ pillow
 numpy
 werkzeug
 psycopg2-binary
+requests
