@@ -1,4 +1,9 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_NUM_INTEROP_THREADS'] = '1'
+os.environ['TF_NUM_INTRAOP_THREADS'] = '1'
+import gc
+from tensorflow.keras import backend as K
 import json
 import sqlite3
 from datetime import datetime
@@ -240,7 +245,15 @@ def run_ai_prediction(filepath):
 
     variations = [enhanced, enhanced.rotate(90), enhanced.transpose(Image.FLIP_LEFT_RIGHT), enhanced.rotate(180)]
     batch = np.array([np.array(v) / 255.0 for v in variations])
-    avg   = np.mean(model.predict(batch), axis=0)
+    avg   = np.mean(model.predict(batch, batch_size=4), axis=0)
+    
+    # Aggressively clean up memory to prevent Render OOM
+    del batch
+    del variations
+    del img_resized
+    del img
+    gc.collect()
+    K.clear_session()
 
     for idx, name in class_names.items():
         if 'healthy' in name.lower():
