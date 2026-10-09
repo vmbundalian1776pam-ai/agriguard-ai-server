@@ -43,10 +43,10 @@ os.makedirs(TEMP_FOLDER,   exist_ok=True)
 if DATABASE_URL:
     import psycopg2
     import psycopg2.extras
-    print("🐘 Using PostgreSQL (Supabase)")
+    print(" Using PostgreSQL (Supabase)")
     PLACEHOLDER = '%s'
 else:
-    print("🗄️  Using SQLite (local)")
+    print("  Using SQLite (local)")
     PLACEHOLDER = '?'
 
 
@@ -196,7 +196,7 @@ def init_db():
         conn.commit()
         conn.close()
 
-    print("✅ Database initialised.")
+    print(" Database initialised.")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # AI Model
@@ -211,9 +211,9 @@ def load_ai_assets():
         model = load_model(MODEL_PATH)
         with open(CLASSES_PATH, 'r') as f:
             class_names = {int(k): v for k, v in json.load(f).items()}
-        print("✅ AI Model loaded!")
+        print(" AI Model loaded!")
     else:
-        print("⚠️  AI Model not found.")
+        print("  AI Model not found.")
 
 def generate_recommendation(disease_name):
     d = disease_name.lower()
@@ -540,5 +540,5 @@ except Exception as e:
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    print(f"🚀 Agri-Guard server on http://0.0.0.0:{port}")
+    print(f" Agri-Guard server on http://0.0.0.0:{port}")
     app.run(host='0.0.0.0', port=port, debug=False)
