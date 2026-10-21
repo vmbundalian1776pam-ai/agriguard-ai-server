@@ -27,11 +27,12 @@ import requests
 # ─────────────────────────────────────────────────────────────────────────────
 # Configuration
 # ─────────────────────────────────────────────────────────────────────────────
-MODEL_PATH    = 'plant_disease_model.h5'
-CLASSES_PATH  = 'class_names.json'
-UPLOAD_FOLDER = 'uploads'
-TEMP_FOLDER   = 'temp_uploads'
-DB_PATH       = os.environ.get('DB_PATH', 'agriguard.db')
+BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH    = os.path.join(BASE_DIR, 'plant_disease_model.h5')
+CLASSES_PATH  = os.path.join(BASE_DIR, 'class_names.json')
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+TEMP_FOLDER   = os.path.join(BASE_DIR, 'temp_uploads')
+DB_PATH       = os.environ.get('DB_PATH', os.path.join(BASE_DIR, 'agriguard.db'))
 DATABASE_URL  = os.environ.get('DATABASE_URL')   # Set this on Render for Supabase
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -206,14 +207,18 @@ class_names = {}
 
 def load_ai_assets():
     global model, class_names
+    print(f"Checking model paths: {MODEL_PATH} exists={os.path.exists(MODEL_PATH)}, {CLASSES_PATH} exists={os.path.exists(CLASSES_PATH)}")
     if os.path.exists(MODEL_PATH) and os.path.exists(CLASSES_PATH):
-        print(f"Loading AI model...")
-        model = load_model(MODEL_PATH)
-        with open(CLASSES_PATH, 'r') as f:
-            class_names = {int(k): v for k, v in json.load(f).items()}
-        print(" AI Model loaded!")
+        try:
+            print("Loading AI model from " + MODEL_PATH + "...")
+            model = load_model(MODEL_PATH)
+            with open(CLASSES_PATH, 'r') as f:
+                class_names = {int(k): v for k, v in json.load(f).items()}
+            print("✅ AI Model loaded successfully with", len(class_names), "classes!")
+        except Exception as e:
+            print("❌ Error loading model:", e)
     else:
-        print("  AI Model not found.")
+        print("⚠️ Model or classes file not found at:", MODEL_PATH)
 
 def generate_recommendation(disease_name):
     d = disease_name.lower()
@@ -261,6 +266,10 @@ def generate_recommendation(disease_name):
     return "Crop anomaly detected. Isolate affected area and consult an agricultural extension specialist."
 
 def run_ai_prediction(filepath):
+    global model, class_names
+    if model is None:
+        print("Model was None in run_ai_prediction! Loading now...")
+        load_ai_assets()
     if model is None:
         return {"error": "AI Model not loaded."}
     img        = Image.open(filepath).convert('RGB')
@@ -297,7 +306,7 @@ def run_ai_prediction(filepath):
     idx        = int(np.argmax(avg))
     confidence = float(avg[idx])
 
-    if confidence < 0.75:
+    if confidence < 0.40:
         return {"status": "unknown", "disease": "Not a Plant / Unrecognized",
                 "recommendation": "Could not confidently identify a crop. Point the camera at a plant leaf and retry.",
                 "confidence": confidence}
