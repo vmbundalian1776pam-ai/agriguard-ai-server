@@ -217,13 +217,47 @@ def load_ai_assets():
 
 def generate_recommendation(disease_name):
     d = disease_name.lower()
-    if 'healthy'    in d: return "Plant is healthy. Maintain regular irrigation and routine nutrient management."
-    if 'insect'     in d or 'pest' in d: return "Insect pest damage detected. Prune infested shoots and spray neem oil (2–3%)."
-    if 'spot'       in d: return "Fungal leaf spot detected. Remove infected leaves and apply copper-based fungicide."
-    if 'mosaic'     in d: return "Mosaic virus detected. Remove infected plants and control aphids/whiteflies."
-    if 'small leaf' in d or 'little leaf' in d: return "Little Leaf Disease detected. Discard stunted plants and control leafhopper vectors."
-    if 'white mold' in d or 'mold' in d: return "White mold detected. Prune affected stems and apply Trichoderma bio-fungicide."
-    if 'wilt'       in d: return "Wilt disease detected. Remove wilted plants and treat with copper oxychloride."
+
+    # Bitter Gourd / Ampalaya
+    if 'bitter gourd' in d or 'ampalaya' in d:
+        if 'anthracnose' in d:
+            return "Anthracnose detected on Bitter Gourd. Remove infected leaves/fruit and apply Mancozeb or Chlorothalonil fungicide. Avoid overhead watering."
+        if 'downy mildew' in d or 'mildew' in d:
+            return "Downy Mildew detected on Bitter Gourd. Apply copper-based fungicide or Metalaxyl. Increase trellising spacing to improve air circulation."
+        if 'healthy' in d:
+            return "Bitter Gourd plant is healthy. Maintain regular trellising, balanced N-P-K fertilizer, and consistent soil moisture."
+
+    # Corn / Maize
+    if 'corn' in d or 'maize' in d:
+        if 'common rust' in d or 'rust' in d:
+            return "Common Rust detected on Corn. Apply Azoxystrobin or Pyraclostrobin fungicide if pustules appear before silking. Plant rust-resistant hybrids."
+        if 'gray leaf spot' in d:
+            return "Gray Leaf Spot detected on Corn. Apply foliar Strobilurin/Triazole fungicide. Rotate crops and manage field residue to reduce fungal carryover."
+        if 'northern leaf blight' in d or 'blight' in d:
+            return "Northern Leaf Blight detected on Corn. Spray Mancozeb or propiconazole. Practice 1-2 year crop rotation with non-host crops."
+        if 'healthy' in d:
+            return "Corn crop is healthy. Ensure adequate nitrogen application during vegetative stages and maintain uniform irrigation."
+
+    # Eggplant / Talong
+    if 'eggplant' in d or 'talong' in d:
+        if 'insect' in d or 'pest' in d:
+            return "Insect pest damage detected (Shoot/Fruit Borer). Prune infested shoots and spray neem oil (2-3 percent) or Bacillus thuringiensis."
+        if 'leaf spot' in d or 'spot' in d:
+            return "Cercospora Leaf Spot detected on Eggplant. Remove lower infected leaves and spray copper oxychloride fungicide."
+        if 'mosaic' in d:
+            return "Mosaic Virus detected on Eggplant. Promptly rogue out infected plants; control aphid and whitefly vectors with insecticidal soap."
+        if 'small leaf' in d or 'little leaf' in d:
+            return "Little Leaf Disease detected on Eggplant. Uproot and discard stunted plants; control leafhopper vectors with systemic insecticide."
+        if 'white mold' in d or 'mold' in d:
+            return "White Mold detected on Eggplant. Prune affected stems, avoid wet foliage, and apply Trichoderma bio-fungicide."
+        if 'wilt' in d:
+            return "Bacterial/Fusarium Wilt detected on Eggplant. Remove wilted plants immediately, improve drainage, and drench soil with copper bactericide."
+        if 'healthy' in d:
+            return "Eggplant crop is healthy. Maintain regular irrigation and scout weekly for early signs of pests."
+
+    # General Fallbacks
+    if 'healthy' in d:
+        return "Plant is healthy. Maintain regular irrigation and routine nutrient management."
     return "Crop anomaly detected. Isolate affected area and consult an agricultural extension specialist."
 
 def run_ai_prediction(filepath):

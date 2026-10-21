@@ -1,9 +1,16 @@
 {
-  "0": "Healthy Leaf",
-  "1": "Insect Pest Disease",
-  "2": "Leaf Spot Disease",
-  "3": "Mosaic Virus Disease",
-  "4": "Small Leaf Disease",
-  "5": "White Mold Disease",
-  "6": "Wilt Disease"
+  "0": "Bitter Gourd - Anthracnose",
+  "1": "Bitter Gourd - Downy Mildew",
+  "2": "Bitter Gourd - Healthy",
+  "3": "Corn - Common Rust",
+  "4": "Corn - Gray Leaf Spot",
+  "5": "Corn - Healthy",
+  "6": "Corn - Northern Leaf Blight",
+  "7": "Eggplant - Healthy",
+  "8": "Eggplant - Insect Pest",
+  "9": "Eggplant - Leaf Spot",
+  "10": "Eggplant - Mosaic Virus",
+  "11": "Eggplant - Small Leaf",
+  "12": "Eggplant - White Mold",
+  "13": "Eggplant - Wilt"
 }
